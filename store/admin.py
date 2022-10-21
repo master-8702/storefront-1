@@ -6,12 +6,19 @@ from django.urls import reverse
 from . import models
 
 
+class OrderItemInline(admin.TabularInline):
+    autocomplete_fields = ['product']
+    extra = 0
+    model = models.OrderItem
+
+
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['customer']
+    inlines = [OrderItemInline]
     list_display = ['id', 'placed_at', 'customer']
     list_per_page = 10
     list_select_related = ['customer']
-    autocomplete_fields = ['customer']
 
 
 class InventoryFilter(admin.SimpleListFilter):
@@ -31,8 +38,9 @@ class InventoryFilter(admin.SimpleListFilter):
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     actions = ['clear_inventory']
-    prepopulated_fields = {'slug': ['title']}
     autocomplete_fields = ['collection']
+    search_fields = ['title__icontains']
+    prepopulated_fields = {'slug': ['title']}
     list_display = ['title', 'unit_price', 'inventory_status', 'collection_title']
     list_editable = ['unit_price']
     list_filter = ['collection', 'last_update', InventoryFilter]
