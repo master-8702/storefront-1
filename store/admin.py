@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.db.models import Count
+from django.db.models import Count, QuerySet
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
 
@@ -13,10 +13,25 @@ class OrderAdmin(admin.ModelAdmin):
     list_select_related = ['customer']
 
 
+class InventoryFilter(admin.SimpleListFilter):
+    title = 'inventory'
+    parameter_name = 'inventory'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('<10', 'Low')
+        ]
+
+    def queryset(self, request, queryset: QuerySet):
+        if self.value() == '<10':
+            return queryset.filter(inventory__lt=10)
+
+
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['title', 'unit_price', 'inventory_status', 'collection_title']
     list_editable = ['unit_price']
+    list_filter = ['collection', 'last_update', InventoryFilter]
     list_per_page = 10
     list_select_related = ['collection']
 
@@ -41,9 +56,9 @@ class CustomerAdmin(admin.ModelAdmin):
     @admin.display(ordering='orders')
     def orders(self, customer):
         url = (
-            reverse('admin:store_order_changelist')
-            + '?'
-            + urlencode({'customer__id': str(customer.id)})
+                reverse('admin:store_order_changelist')
+                + '?'
+                + urlencode({'customer__id': str(customer.id)})
         )
         return format_html(f'<a href="{url}">{customer.orders} Orders</a>')
 
