@@ -1,4 +1,5 @@
 from decimal import Decimal
+
 from django.db import transaction
 from rest_framework import serializers
 
@@ -142,8 +143,8 @@ class CreateOrderSerializer(serializers.Serializer):
 
     def save(self, **kwargs):
         with transaction.atomic():
-            (cart, _) = Cart.objects.get_or_create(pk=self.validated_data['cart_id'])
-            (customer, created) = Customer.objects.get_or_create(user_id=self.context['user_id'])
+            (cart, _) = Cart.objects.get(pk=self.validated_data['cart_id'])
+            customer = Customer.objects.get(user_id=self.context['user_id'])
             order = Order.objects.create(customer=customer)
 
             cart_items = CartItem.objects \
