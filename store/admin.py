@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils.html import format_html, urlencode
 
 from . import models
+from .models import ProductImage
 
 
 class OrderItemInline(admin.TabularInline):
@@ -35,8 +36,21 @@ class InventoryFilter(admin.SimpleListFilter):
             return queryset.filter(inventory__lt=10)
 
 
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    readonly_fields = ['thumbnail']
+
+    def thumbnail(self, instance):
+        if instance.image.name != '':
+            return format_html(f'<img src="{instance.image.url}" class="thumbnail" />')
+        return ''
+
+
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ['store/styles.css']}
+
     actions = ['clear_inventory']
     autocomplete_fields = ['collection']
     search_fields = ['title__icontains']
@@ -46,6 +60,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ['collection', 'last_update', InventoryFilter]
     list_per_page = 10
     list_select_related = ['collection']
+    inlines = [ProductImageInline]
 
     def collection_title(self, product):
         return product.collection.title
