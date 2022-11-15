@@ -1,0 +1,23 @@
+{
+  "name": "storefront2_client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel index.html -p 8001",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "autoprefixer": "9",
+    "axios": "^0.23.0",
+    "postcss": "7",
+    "process": "^0.11.10",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5"
+  }
+}

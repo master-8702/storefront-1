@@ -9,12 +9,12 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from .filters import ProductFilter
-from .models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer, Order
+from .models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer, Order, ProductImage
 from .pagination import DefaultPagination
 from .permissions import IsAdminOrReadOnly, ViewCustomerHistoryPermission
 from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, \
     CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer, OrderSerializer, \
-    CreateOrderSerializer, UpdateOrderSerializer
+    CreateOrderSerializer, UpdateOrderSerializer, ProductImageSerializer
 
 
 class CartItemViewSet(ModelViewSet):
@@ -46,7 +46,7 @@ class CartViewSet(CreateModelMixin,
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.prefetch_related('images').all()
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
@@ -63,6 +63,16 @@ class ProductViewSet(ModelViewSet):
             return Response({'error': 'Product cannot be deleted because it is associated with an order item'},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
+
+
+class ProductImageViewSet(ModelViewSet):
+    serializer_class = ProductImageSerializer
+
+    def get_queryset(self):
+        return ProductImage.objects.filter(product_id=self.kwargs['product_pk'])
+
+    def get_serializer_context(self):
+        return {'product_id': self.kwargs['product_pk']}
 
 
 class CollectionViewSet(ModelViewSet):
