@@ -51,6 +51,11 @@ class Review(models.Model):
     date = models.DateField(auto_now_add=True)
 
 
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='store/images')
+
+
 # noinspection PyUnresolvedReferences
 class Customer(models.Model):
     MEMBERSHIP_BRONZE = 'B'
