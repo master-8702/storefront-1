@@ -2,7 +2,7 @@ import pytest
 from model_bakery import baker
 from rest_framework import status
 
-from store.models import Collection
+from store.models import Collection, Product
 
 
 @pytest.fixture
@@ -64,3 +64,18 @@ class TestCreateProduct:
                                    'collection': ''})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+class TestRetrieveProduct:
+    def test_if_product_exists_return_200(self, api_client):
+        product = baker.make(Product)
+
+        response = api_client.get(f'/store/collections/{product.id}/')
+
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_if_product_doesnt_exists_return_404(self, api_client):
+        response = api_client.get('/store/collections/9999/')
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
