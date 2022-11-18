@@ -28,7 +28,7 @@ class TestCreateProduct:
 
         assert response.status_code == status.HTTP_201_CREATED
 
-    def test_if_anonymous_returns_401(self, authenticate, create_product):
+    def test_if_anonymous_returns_401(self, create_product):
         collection = baker.make(Collection)
 
         response = create_product({'title': 'a',
