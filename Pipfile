@@ -13,6 +13,7 @@ django-filter = "*"
 djoser = "*"
 djangorestframework-simplejwt = "*"
 django-redis = "*"
+whitenoise = "*"
 
 [dev-packages]
 pytest = "*"
