@@ -12,6 +12,7 @@ drf-nested-routers = "*"
 django-filter = "*"
 djoser = "*"
 djangorestframework-simplejwt = "*"
+django-redis = "*"
 
 [dev-packages]
 pytest = "*"
@@ -19,6 +20,7 @@ pytest-django = "*"
 pytest-watch = "*"
 model-bakery = "*"
 locust = "*"
+django-silk = "*"
 
 [requires]
 python_version = "3.9"
