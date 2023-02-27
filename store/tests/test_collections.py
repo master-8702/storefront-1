@@ -63,3 +63,52 @@ class TestRetrieveCollection:
         response = api_client.get('/store/collections/9999/')
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+
+
+@pytest.mark.django_db
+class TestUpdateCollection:
+    def test_if_user_is_not_admin_return_403(self,api_client , authenticate):
+        authenticate()
+        collection = baker.make(Collection)
+        
+        response = api_client.patch(f'/store/collections/{collection.id}/', {'title': 'changed_title'})
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+    def test_if_user_is_admin_return_200(self,api_client , authenticate):
+        authenticate(is_staff=True)
+        collection = baker.make(Collection)
+        
+        response = api_client.patch(f'/store/collections/{collection.id}/', {'title': 'changed_title'})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['title'] == "changed_title"
+
+
+
+@pytest.mark.django_db
+class TestDeleteCollection:
+
+    def test_if_user_is_not_admin_return_403(self,api_client , authenticate):
+        authenticate()
+        collection = baker.make(Collection)
+        
+        response = api_client.delete(f'/store/collections/{collection.id}/')
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    
+    def test_if_user_is_admin_return_204(self,api_client , authenticate):
+        authenticate(is_staff=True)
+        collection = baker.make(Collection)
+        
+        response = api_client.delete(f'/store/collections/{collection.id}/')
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+    
+
+
+
